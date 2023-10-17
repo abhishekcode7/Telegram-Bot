@@ -22,8 +22,8 @@ export class BotService implements OnModuleInit {
 
     this.token = process.env.TELEGRAM_BOT_TOKEN.toString();
 
-    if(this.bot == null)
-    this.bot = new TelegramBot(this.token, { polling: true });
+    if (this.bot == null)
+      this.bot = new TelegramBot(this.token, { polling: true });
 
     this.botMessage();
     // this.userModel.deleteMany().exec()
@@ -73,6 +73,19 @@ export class BotService implements OnModuleInit {
         console.log(r);
       });
     });
+
+    this.bot.onText(/\/leave/, (msg, match) => {
+      this.findUser(msg.from.id.toString()).then((user) => {
+        if (user != null) {
+          this.deleteUser(msg.from.id.toString());
+        } else {
+          this.bot.sendMessage(
+            msg.from.id,
+            'You are not subscribed to weather updates.',
+          );
+        }
+      });
+    });
   }
 
   async saveUser(userDto: CreateUserDto): Promise<User> {
@@ -97,8 +110,22 @@ export class BotService implements OnModuleInit {
     return this.userModel.find().exec();
   }
 
-  @Cron('0 0 8 * * *',{
-    timeZone: 'Asia/Kolkata'
+  async deleteUser(id: String) {
+    this.userModel.deleteOne({ id: id }).then(
+      () => {
+        this.bot.sendMessage(id, 'You have successfully unsubscribed.');
+      },
+      (_) => {
+        this.bot.sendMessage(
+          id,
+          'Something went wrong , please try the command again',
+        );
+      },
+    );
+  }
+
+  @Cron('0 0 8 * * *', {
+    timeZone: 'Asia/Kolkata',
   })
   sendWeatherUpdates() {
     this.findAll().then((users) => {
