@@ -15,13 +15,14 @@ export class BotService implements OnModuleInit {
   ) {}
 
   token: String;
-  bot: any;
+  bot: any = null;
   city: string = null;
   onModuleInit() {
     const TelegramBot = require('node-telegram-bot-api');
 
     this.token = process.env.TELEGRAM_BOT_TOKEN.toString();
 
+    if(this.bot == null)
     this.bot = new TelegramBot(this.token, { polling: true });
 
     this.botMessage();
