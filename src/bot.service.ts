@@ -96,7 +96,7 @@ export class BotService implements OnModuleInit {
     return this.userModel.find().exec();
   }
 
-  @Cron('* * * * * *')
+  @Cron('50 * * * * *')
   sendWeatherUpdates() {
     this.findAll().then((users) => {
       users.forEach((user) => {
