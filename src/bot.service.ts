@@ -124,7 +124,7 @@ export class BotService implements OnModuleInit {
     );
   }
 
-  @Cron('0 0 8 * * *', {
+  @Cron('0 0 9 * * *', {
     timeZone: 'Asia/Kolkata',
   })
   sendWeatherUpdates() {
